@@ -11,4 +11,23 @@ def exponential(a, g):
     return np.dot(exponentialC[0:3],[a, g, 1])*np.exp(exponentialC[3]*a)\
     + np.dot(exponentialC[4:7],[a, g, 1])*np.exp(exponentialC[7]*g)
 
-print(exponential(1,3))
+for _ in range(N):
+    a = alt
+    g = grad
+    ea = np.exp(exponentialC[3]*a)
+    eg = np.exp(exponentialC[7]*g)
+    DelCP = [
+        a*ea,
+        g*ea,
+        ea,
+        a*(exponentialC[0]*a + exponentialC[1]*g + exponentialC[2])*ea,
+        a*eg,
+        g*eg,
+        eg,
+        g*(exponentialC[4]*a + exponentialC[5]*g + exponentialC[6])*eg
+    ]
+    deviation = np.array([exponential(a[i], g[i]) - v[i] for i in range(len(a))])
+    DelCL = np.array([np.dot(deviation, DelCP[i]) for i in range(8)])
+    exponentialC -= alpha * DelCL
+
+print(exponential(2, 7))
