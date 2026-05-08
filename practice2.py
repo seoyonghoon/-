@@ -27,7 +27,7 @@ for _ in range(N):
         g*(exponentialC[4]*a + exponentialC[5]*g + exponentialC[6])*eg
     ]
     deviation = np.array([exponential(a[i], g[i]) - v[i] for i in range(len(a))])
-    DelCL = np.array([np.dot(deviation, DelCP[i]) for i in range(8)])
+    DelCL = np.array([np.dot(deviation, DelCP[i]) for i in range(8)]) / len(a)
     exponentialC -= alpha * DelCL
 
 print(exponential(2, 7))
