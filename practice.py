@@ -13,7 +13,7 @@ def polynomial(a, g):
 
 for _ in range(N): 
     deviation = np.array([polynomial(alt[i], grad[i]) - v[i] for i in range(len(alt))])
-    DelCL = np.array([np.dot(deviation, polynomialV[i]) for i in range(6)])
+    DelCL = np.array([np.dot(deviation, polynomialV[i]) for i in range(6)]) / len(alt)
     polynomialC -= alpha * DelCL
 
 print(polynomial(1,3))
