@@ -1,11 +1,11 @@
 import numpy as np
 
 N = 10000 #경사하강법 반복횟수
-alpha = 0.00001 #학습률
-alt = np.array([1, 2, 3]) #해발고도 리스트
-grad = np.array([3, 7, 5]) #경사 리스트(각 x, dy/dx 기울기o)
-fatigue = np.array([1, 4, 9]) #피로도 리스트
-v = np.array([3, 38, 15]) #속도 리스트, 얘네들 싹다 손으로 작성...?
+alpha = 0.001 #학습률
+alt = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) #해발고도 리스트
+grad = np.array([3, 7, 5, 2, 3, 5, 1, 8, 3, 2]) #경사 리스트(각 x, dy/dx 기울기o)
+fatigue = np.array([1, 4, 9, 2, 4, 6, 9, 2, 0, 9]) #피로도 리스트
+v = np.array([3, 38, 15, 24, 30, 52, 23, 17, 3, 9]) #속도 리스트, 얘네들 싹다 손으로 작성...?
 
 # 정규화 [0,1] 사이
 altnn = np.array([np.min(alt), np.max(alt)-np.min(alt)])
@@ -22,7 +22,6 @@ vN = (v - vnn[0]) / vnn[1]
 exponentialC = np.random.normal(0, 1, 16)
 
 def exponential(a, g, f):
-    a, g, f = (a - altnn[0])/altnn[1], (g - gradnn[0])/gradnn[1], (f - fatiguenn[0])/fatiguenn[1]
     return (np.dot(exponentialC[0:4],[a, g, f, 1])*np.exp(exponentialC[4]*a)\
     + np.dot(exponentialC[5:9],[a, g, f, 1])*np.exp(exponentialC[9]*g)\
     + np.dot(exponentialC[10:14],[a, g, f, 1])*np.exp(exponentialC[14]*f)\
@@ -58,4 +57,6 @@ for _ in range(N):
     DelCL = np.array([np.dot(deviation, DelCP[i]) for i in range(16)])
     exponentialC -= alpha * DelCL
 
-print(exponential(2, 7, 4)*vnn[1]+vnn[0])
+def test(a, g, f):
+    return exponential((a - altnn[0])/altnn[1], (g - gradnn[0])/gradnn[1], (f - fatiguenn[0])/fatiguenn[1])*vnn[1] + vnn[0]
+print(test(2, 7, 4))
