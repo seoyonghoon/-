@@ -24,14 +24,16 @@ polynomialC = np.random.normal(0, 1, 10)
 polynomialV = [altN**2, gradN**2, fatigueN**2, altN*gradN, gradN*fatigueN, fatigueN*altN, altN, gradN, fatigueN, np.ones(len(alt))] #DelCP역할
 
 def polynomial(a, g, f):
-    a, g, f = (a - altnn[0])/altnn[1], (g - gradnn[0])/gradnn[1], (f - fatiguenn[0])/fatiguenn[1]
     return np.dot(polynomialC, [a*a, g*g, f*f, a*g, g*f, f*a, a, g, f, 1])
 
 for _ in range(N): 
-    deviation = np.array([polynomial(alt[i], grad[i], fatigue[i]) - v[i] for i in range(len(alt))])
+    deviation = np.array([polynomial(altN[i], gradN[i], fatigueN[i]) - vN[i] for i in range(len(alt))])
     DelCL = np.array([np.dot(deviation, polynomialV[i]) for i in range(10)])
     polynomialC -= alpha * DelCL
 
-print(polynomial(1, 3, 1))
+def test(a, g, f):
+    return(polynomial((a - altnn[0])/altnn[1], (g - gradnn[0])/gradnn[1], (f - fatiguenn[0])/fatiguenn[1])*vnn[1] + vnn[0])
+
+print(test(1, 3, 1))
 
 

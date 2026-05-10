@@ -59,4 +59,5 @@ for _ in range(N):
 
 def test(a, g, f):
     return exponential((a - altnn[0])/altnn[1], (g - gradnn[0])/gradnn[1], (f - fatiguenn[0])/fatiguenn[1])*vnn[1] + vnn[0]
+
 print(test(2, 7, 4))
