@@ -1,11 +1,14 @@
 import numpy as np
+from matplotlib import pyplot as plt
 
 N = 10000 #경사하강법 반복횟수
-alpha = 0.001 #학습률
+alpha = 0.01 #학습률
 alt = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) #해발고도 리스트
 grad = np.array([3, 7, 5, 2, 3, 5, 1, 8, 3, 2]) #경사 리스트(각 x, dy/dx 기울기o)
 fatigue = np.array([1, 4, 9, 2, 4, 6, 9, 2, 0, 9]) #피로도 리스트
 v = np.array([3, 38, 15, 24, 30, 52, 23, 17, 3, 9]) #속도 리스트, 얘네들 싹다 손으로 작성...?
+
+R2s = np.array([]) #결정계수 리스트
 
 # 정규화 [0,1] 사이
 altnn = np.array([np.min(alt), np.max(alt)-np.min(alt)])
@@ -27,37 +30,50 @@ def exponential(a, g, f):
     + np.dot(exponentialC[10:14],[a, g, f, 1])*np.exp(exponentialC[14]*f)\
     + exponentialC[15])
 
+def calcY():
+    return [exponential(altN[i], gradN[i], fatigueN[i]) for i in range(len(alt))]
 
+#결정계수 계산
+def R2():
+    Y = calcY()
+    ym = np.mean(vN)
+    return 1 - (sum([(Y[i] - vN[i])**2 for i in range(len(alt))]))/(sum([(i - ym)**2 for i in Y]))
+
+#학습
 for _ in range(N):
-    a = altN
-    g = gradN
-    f = fatigueN
-    ea = np.exp(exponentialC[4]*a)
-    eg = np.exp(exponentialC[9]*g)
-    ef = np.exp(exponentialC[14]*f)
-    DelCP = [
-        a*ea,
-        g*ea,
-        f*ea,
-        ea,
-        a*(exponentialC[0]*a + exponentialC[1]*g + exponentialC[2]*f + exponentialC[3])*ea,
-        a*eg,
-        g*eg,
-        f*eg,
-        eg,
-        g*(exponentialC[5]*a + exponentialC[6]*g + exponentialC[7]*f + exponentialC[8])*eg,
-        a*ef,
-        g*ef,
-        f*ef,
-        ef,
-        f*(exponentialC[10]*a + exponentialC[11]*g + exponentialC[12]*f + exponentialC[13])*ef,
-        np.ones_like(alt)
-    ]
-    deviation = np.array([exponential(a[i], g[i], f[i]) - vN[i] for i in range(len(a))])
-    DelCL = np.array([np.dot(deviation, DelCP[i]) for i in range(16)])
-    exponentialC -= alpha * DelCL
+        a = altN
+        g = gradN
+        f = fatigueN
+        ea = np.exp(exponentialC[4]*a)
+        eg = np.exp(exponentialC[9]*g)
+        ef = np.exp(exponentialC[14]*f)
+        DelCP = [
+            a*ea,
+            g*ea,
+            f*ea,
+            ea,
+            a*(exponentialC[0]*a + exponentialC[1]*g + exponentialC[2]*f + exponentialC[3])*ea,
+            a*eg,
+            g*eg,
+            f*eg,
+            eg,
+            g*(exponentialC[5]*a + exponentialC[6]*g + exponentialC[7]*f + exponentialC[8])*eg,
+            a*ef,
+            g*ef,
+            f*ef,
+            ef,
+            f*(exponentialC[10]*a + exponentialC[11]*g + exponentialC[12]*f + exponentialC[13])*ef,
+            np.ones_like(alt)
+         ]
+        deviation = np.array([exponential(a[i], g[i], f[i]) - vN[i] for i in range(len(a))])
+        DelCL = np.array([np.dot(deviation, DelCP[i]) for i in range(16)])
+        exponentialC -= alpha * DelCL
+        if (_ + 1) % 1000 == 0:
+             R2s = np.append(R2s, R2())
+    
 
 def test(a, g, f):
     return exponential((a - altnn[0])/altnn[1], (g - gradnn[0])/gradnn[1], (f - fatiguenn[0])/fatiguenn[1])*vnn[1] + vnn[0]
 
-print(test(2, 7, 4))
+plt.plot(np.arange(10), R2s)
+plt.show()
